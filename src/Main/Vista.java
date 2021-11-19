@@ -7,7 +7,10 @@ package Main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 
 /**
@@ -19,6 +22,9 @@ public class Vista extends javax.swing.JFrame {
     /**
      * Creates new form Vista
      */
+    
+    Chomsky chomsky=new Chomsky();
+
     public Vista() {
         initComponents();
     }
@@ -177,12 +183,36 @@ public class Vista extends javax.swing.JFrame {
         
         if(estaVarInicial==false){
             JOptionPane.showMessageDialog(rootPane, "La variable inicial " +varInicial +" no se encuentra en las variables no terminales");
-        }
+        }else{
         System.out.println(estaVarInicial);
-        Chomsky chomsky=new Chomsky();
         chomsky.setString(TextSigma.getText());
-        chomsky.TextArea.setText("Sigma sus Transacciones ...." +"\n" + "\n" +  TextSigma.getText());
+        
+        Map<String, List<String>> transiciones=null;
+        
+        //Asignar sigma a un map
+                String a;
+        /*Map<String, List<String>> transiciones =
+                Arrays.stream(TextSigma.getText().split(","))
+                //.map(i-> i.split("/"))
+                //.forEach(System.out::println)
+                .map(i-> i.split("→"))
+                .collect(Collectors.groupingBy(entry->entry[0],v->convertirSigma(v[1])));
+                /*.collect(Collectors.groupingBy(entry-> entry[0],
+                        Collectors.mapping(entry->convertirSigma(entry[1]),
+                                Collectors.toList() )));*/
+        
+
+        //transiciones.entrySet().stream().forEach(e->System.out.println(e.getKey() + " : " + e.getValue()));
+        
+        chomsky.TextArea.setText("Sigma sus Transacciones ...." +"\n" + "\n" );
+        guardarTransiciones(TextSigma.getText());
+
+        chomsky.TextArea.setText(chomsky.TextArea.getText() +"\n" + "\n" + "Eliminando Simbolos inutiles" +"\n");
+
         chomsky.setVisible(true);
+        
+        }
+        
         
         /*if(!validarString(InputVariablesTerminales.getText().trim())){
             JOptionPane.showMessageDialog(rootPane, "LOS DATOS NO SON VALIDOS");
@@ -206,6 +236,29 @@ public class Vista extends javax.swing.JFrame {
         if(!datos.matches("[0-9]")){
             JOptionPane.showMessageDialog(rootPane, mensaje + datos  + " no esta permitido");
         }
+    }
+    
+    public void guardarTransiciones(String sigma){
+        String[] obtenerTransiciones=sigma.split(",");
+        String a=Arrays.toString(obtenerTransiciones);
+        List<String> az=Arrays.stream(obtenerTransiciones)
+                .collect(Collectors.toList());
+                
+       az.stream().forEach(x->chomsky.TextArea.setText(chomsky.TextArea.getText() + x));
+       Map<String,List<String>> transiciones= az.stream()
+               .map(tra-> tra.split("→"))
+               .collect(Collectors.toMap(entry-> entry[0],entry-> convertirSigma(entry[1])));
+        System.out.println(transiciones);
+    }
+    
+    
+    
+    public List<String> convertirSigma(String a){
+        String[] c=a.split("/");
+        List<String> g= Arrays.stream(c)
+                .map(i-> i)
+                .collect(Collectors.toList());
+    return g;
     }
     
     /**
