@@ -29,6 +29,7 @@ public class Vista extends javax.swing.JFrame {
      Map<String,List<String>> transiciones;
      List<String> borrarNoGeneradoras=new ArrayList<>();
      String varInicial;
+     String contenidoLista="";
 
     public Vista() {
         initComponents();
@@ -180,6 +181,8 @@ public class Vista extends javax.swing.JFrame {
                                             System.out.println("variable no terminal: " +vt);});
         String varTer= TextVariablesTerminales.getText();
         variablesTerminales= new ArrayList<String>(Arrays.asList(varTer.split(",")));
+        variablesTerminales.add("ε");
+        variablesTerminales.add("λ");
         variablesTerminales.stream()
                             .forEach(vt -> {
                                             noEsNumero(vt.trim(),"La variable terminal ");
@@ -213,6 +216,8 @@ public class Vista extends javax.swing.JFrame {
         
         chomsky.TextArea.setText("Sigma sus Transacciones ...." +"\n" + "\n" );
         guardarTransiciones(TextSigma.getText());
+        
+       
 
         chomsky.setVisible(true);
         
@@ -238,7 +243,7 @@ public class Vista extends javax.swing.JFrame {
         }
     }
     public void noEsNumero(String datos,String mensaje){
-        if(!datos.matches("[0-9]")){
+        if(!datos.matches("[0-9]") && !datos.matches("[λε]")){
             JOptionPane.showMessageDialog(rootPane, mensaje + datos  + " no esta permitido");
         }
     }
@@ -259,19 +264,22 @@ public class Vista extends javax.swing.JFrame {
                 .stream()
                 .forEach(e-> generadores(e.getKey(),e.getValue()));
         
-        chomsky.TextArea.setText(chomsky.TextArea.getText() +"\n" + "\n" + "\n" +"Eliminando no generadores" +"\n");
-
+        chomsky.TextArea.setText(chomsky.TextArea.getText() +"\n" + "\n" + "\n" +"Eliminando no generadoras" +"\n");
+        //borrarNoGeneradoras.remove(-1);
+        //System.out.println("Index de " + borrarNoGeneradoras.indexOf("SS"));
         borrarNoGeneradoras.stream()
                 .forEach(bTran-> {
                     System.out.println(bTran);
                     System.out.println(varInicial);
                     if(!bTran.equals(varInicial)){
+                        System.out.println("Probando q llega en no generadoras: "+ bTran);
                     chomsky.TextArea.setText(chomsky.TextArea.getText() +  bTran +" no es generadora");
                     
                     transiciones.remove(bTran);
                     }
                     });
-                
+        List<String> TransicionesGeneran=obtenerKeyMap(transiciones);
+        imprimirMap(TransicionesGeneran);
         System.out.println(transiciones);
     }
     
@@ -312,6 +320,40 @@ public class Vista extends javax.swing.JFrame {
       boolean v=  variablesTerminales.stream()
                 .anyMatch(t->t.equals(transicion) );
       return v;
+    }
+    
+    public List<String> obtenerKeyMap(Map<String, List<String>> sigma){
+    List<String> prueba= sigma.entrySet().stream().map(e->e.getKey()).collect(Collectors.toList());
+    //prueba.stream().forEach(s->System.out.println("Dentro de prueba " + s ));
+    return prueba;
+    }
+    
+    public void imprimirMap(List<String> sigma){
+        List<String> prueba=transiciones.get("S");
+        //sigma.stream().forEach(s->System.out.println("Probando transiciones : "+s));
+        
+        List<String> transi= new ArrayList<>();
+        int con=0;
+        System.out.println("Tamañno sigma " + sigma.size() );
+        for(String s: sigma ){
+            
+            contenidoLista=contenidoLista+ s + "→";
+            transi = transiciones.get(s);
+            for(String b: transi){
+            con++;
+            if(con==transi.size()){
+                contenidoLista= contenidoLista + b;
+            }else{
+                contenidoLista= contenidoLista + b + "/";
+            }
+            }
+            con=0;
+            contenidoLista= contenidoLista;
+        }
+        System.out.println("Contador " + con);
+                System.out.println(contenidoLista);
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"+ "\n" + contenidoLista);
+
     }
     
 
