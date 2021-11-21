@@ -24,6 +24,11 @@ public class Vista extends javax.swing.JFrame {
      */
     
     Chomsky chomsky=new Chomsky();
+    List<String> variablesNoTerminales;
+    List<String> variablesTerminales;
+     Map<String,List<String>> transiciones;
+     List<String> borrarNoGeneradoras=new ArrayList<>();
+     String varInicial;
 
     public Vista() {
         initComponents();
@@ -165,19 +170,21 @@ public class Vista extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         //this.setVisible(false);
+        chomsky.TextArea.setText("");
+        chomsky.setVisible(false);
         String varNoTer= InputVariablesTerminales.getText();
-        List<String> variablesNoTerminales= new ArrayList<String>(Arrays.asList(varNoTer.split(",")));
+        variablesNoTerminales= new ArrayList<String>(Arrays.asList(varNoTer.split(",")));
         variablesNoTerminales.stream()
                             .forEach(vt -> {
                                             esString(vt.trim(),"La variable no terminal ");
                                             System.out.println("variable no terminal: " +vt);});
         String varTer= TextVariablesTerminales.getText();
-        List<String> variablesTerminales= new ArrayList<String>(Arrays.asList(varTer.split(",")));
+        variablesTerminales= new ArrayList<String>(Arrays.asList(varTer.split(",")));
         variablesTerminales.stream()
                             .forEach(vt -> {
                                             noEsNumero(vt.trim(),"La variable terminal ");
                                             System.out.println("variable terminal: " + vt);});
-        String varInicial = TextVariableInicial.getText();
+        varInicial = TextVariableInicial.getText();
         boolean estaVarInicial = variablesNoTerminales.stream()
                                 .anyMatch(vnt-> vnt.equals(varInicial));
         
@@ -206,8 +213,6 @@ public class Vista extends javax.swing.JFrame {
         
         chomsky.TextArea.setText("Sigma sus Transacciones ...." +"\n" + "\n" );
         guardarTransiciones(TextSigma.getText());
-
-        chomsky.TextArea.setText(chomsky.TextArea.getText() +"\n" + "\n" + "Eliminando Simbolos inutiles" +"\n");
 
         chomsky.setVisible(true);
         
@@ -244,13 +249,31 @@ public class Vista extends javax.swing.JFrame {
         List<String> az=Arrays.stream(obtenerTransiciones)
                 .collect(Collectors.toList());
                 
-       az.stream().forEach(x->chomsky.TextArea.setText(chomsky.TextArea.getText() + x));
-       Map<String,List<String>> transiciones= az.stream()
+       az.stream().forEach(x->chomsky.TextArea.setText(chomsky.TextArea.getText() + x ));
+       transiciones= az.stream()
                .map(tra-> tra.split("→"))
                .collect(Collectors.toMap(entry-> entry[0],entry-> convertirSigma(entry[1])));
+        //System.out.println(transiciones);
+        
+        transiciones.entrySet()
+                .stream()
+                .forEach(e-> generadores(e.getKey(),e.getValue()));
+        
+        chomsky.TextArea.setText(chomsky.TextArea.getText() +"\n" + "\n" + "\n" +"Eliminando no generadores" +"\n");
+
+        borrarNoGeneradoras.stream()
+                .forEach(bTran-> {
+                    System.out.println(bTran);
+                    System.out.println(varInicial);
+                    if(!bTran.equals(varInicial)){
+                    chomsky.TextArea.setText(chomsky.TextArea.getText() +  bTran +" no es generadora");
+                    
+                    transiciones.remove(bTran);
+                    }
+                    });
+                
         System.out.println(transiciones);
     }
-    
     
     
     public List<String> convertirSigma(String a){
@@ -260,6 +283,38 @@ public class Vista extends javax.swing.JFrame {
                 .collect(Collectors.toList());
     return g;
     }
+    
+    public void generadores(String key,List<String> sigma){
+        
+        /*sigma.stream()
+                .forEach(t->System.out.println(esGenerador(t)));*/
+        List<Boolean> seEncuentra=new ArrayList<Boolean>();
+        for(String transiccion: variablesTerminales){
+        boolean v=sigma.stream()
+                .anyMatch(t->t.equals(transiccion));
+        seEncuentra.add(v);
+        
+        }
+        
+        boolean c= seEncuentra.stream().anyMatch(t->t==true);
+        System.out.println("Es verdadera generadora" + c) ;
+        if(c==false){
+        borrarNoGeneradoras.add(key);
+        }
+        //if(c==false){
+        //    chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n" + "La transicion " +key + " no es generadora");
+        //transiciones.remove(key);
+        //}
+        
+    }
+    
+    public boolean esGenerador(String transicion){
+      boolean v=  variablesTerminales.stream()
+                .anyMatch(t->t.equals(transicion) );
+      return v;
+    }
+    
+
     
     /**
      * @param args the command line arguments
