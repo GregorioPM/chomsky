@@ -10,7 +10,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.JOptionPane;
 
 /**
@@ -26,10 +28,13 @@ public class Vista extends javax.swing.JFrame {
     Chomsky chomsky=new Chomsky();
     List<String> variablesNoTerminales;
     List<String> variablesTerminales;
-     Map<String,List<String>> transiciones;
+     Map<String,List<String>> transiciones=new HashMap<>();
      List<String> borrarNoGeneradoras=new ArrayList<>();
      String varInicial;
      String contenidoLista="";
+     String[] cadenaSplit;
+     List<String> probando = Arrays.asList("Gregorio","Perez","Jose");
+
 
     public Vista() {
         initComponents();
@@ -104,23 +109,18 @@ public class Vista extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(TextVariableInicial, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(TextVariablesTerminales, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
-                        .addComponent(InputVariablesTerminales, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(InputVariablesTerminales, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(TextVariablesTerminales)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
+                        .addComponent(TextVariableInicial)))
                 .addGap(22, 22, 22))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -152,7 +152,7 @@ public class Vista extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(31, 31, 31)
@@ -214,7 +214,7 @@ public class Vista extends javax.swing.JFrame {
 
         //transiciones.entrySet().stream().forEach(e->System.out.println(e.getKey() + " : " + e.getValue()));
         
-        chomsky.TextArea.setText("Sigma sus Transacciones ...." +"\n" + "\n" );
+        chomsky.TextArea.setText("Sigma sus Transiciones ...." +"\n" );
         guardarTransiciones(TextSigma.getText());
         
        
@@ -243,7 +243,7 @@ public class Vista extends javax.swing.JFrame {
         }
     }
     public void noEsNumero(String datos,String mensaje){
-        if(!datos.matches("[0-9]") && !datos.matches("[λε]")){
+        if(!datos.matches("[0-9]") && !datos.matches("[λε]") && !datos.matches("[a-z]")){
             JOptionPane.showMessageDialog(rootPane, mensaje + datos  + " no esta permitido");
         }
     }
@@ -252,13 +252,23 @@ public class Vista extends javax.swing.JFrame {
         String[] obtenerTransiciones=sigma.split(",");
         String a=Arrays.toString(obtenerTransiciones);
         List<String> az=Arrays.stream(obtenerTransiciones)
+                .map(t->t=t.trim())
                 .collect(Collectors.toList());
-                
-       az.stream().forEach(x->chomsky.TextArea.setText(chomsky.TextArea.getText() + x ));
+       az.stream().forEach(fs->System.out.println("Probando como ingresa"+fs));
+       az.stream().forEach(x->chomsky.TextArea.setText(chomsky.TextArea.getText()+ "\n" + x ));
        transiciones= az.stream()
                .map(tra-> tra.split("→"))
-               .collect(Collectors.toMap(entry-> entry[0],entry-> convertirSigma(entry[1])));
-        //System.out.println(transiciones);
+               .collect(Collectors.toMap(entry-> entry[0].trim(),entry-> convertirSigma(entry[1])));
+        System.out.println(transiciones);
+        
+        /*for(String cadena: az){
+            String[]cadenaSplit= cadena.split("→");
+            System.out.println("Key:"+cadenaSplit[0]+" Value:"+cadenaSplit[1]);
+            transiciones.put(cadenaSplit[0], convertirSigma(cadenaSplit[1]));
+
+            
+        }*/
+
         
         transiciones.entrySet()
                 .stream()
@@ -278,9 +288,28 @@ public class Vista extends javax.swing.JFrame {
                     transiciones.remove(bTran);
                     }
                     });
+        
+        //Imprimir en orden
         List<String> TransicionesGeneran=obtenerKeyMap(transiciones);
-        imprimirMap(TransicionesGeneran);
-        System.out.println(transiciones);
+        
+        List<String> imprimirOrden=ImprimirEnOrden(TransicionesGeneran);
+        
+        //imprimirOrden.stream().forEach(m->System.out.println("Orden de generadoras: " +m));
+        imprimirMap(imprimirOrden);
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"+ "\n" +"Se elimina Variables inutiles"+ "\n");
+        esVariableInutil(imprimirOrden);
+        
+        
+        //Aqui comienza a validar variables inutiles
+        
+        
+        
+        /*String ar = "Gregorio";
+        String[] transiccionSepara = ar.split("");
+        Arrays.stream(transiccionSepara).forEach(f-> System.out.println("Split al string " +f));
+        boolean encontro = Arrays.stream(transiccionSepara)
+                .anyMatch(t-> t.equals("G"));
+        //System.out.println("Encontro "+ encontro);*/
     }
     
     
@@ -305,7 +334,7 @@ public class Vista extends javax.swing.JFrame {
         }
         
         boolean c= seEncuentra.stream().anyMatch(t->t==true);
-        System.out.println("Es verdadera generadora" + c) ;
+        //System.out.println("Es verdadera generadora" + c) ;
         if(c==false){
         borrarNoGeneradoras.add(key);
         }
@@ -328,32 +357,109 @@ public class Vista extends javax.swing.JFrame {
     return prueba;
     }
     
+    public List<String> ImprimirEnOrden(List<String> sigma){
+        List<String> eliminar = new ArrayList<>();
+        List<String> mostrar = new ArrayList<>();
+
+        for(String a: variablesNoTerminales){
+            boolean val= sigma.stream().anyMatch(t->t.equals(a));
+            if(!val){
+            eliminar.add(a);
+            }else{
+                mostrar.add(a);
+            }
+        }
+        mostrar.stream().forEach(s->System.out.println("Imprimir VariablesNoTerminales: " +s ));
+    return mostrar;
+    }
+    
     public void imprimirMap(List<String> sigma){
         List<String> prueba=transiciones.get("S");
         //sigma.stream().forEach(s->System.out.println("Probando transiciones : "+s));
         
         List<String> transi= new ArrayList<>();
         int con=0;
-        System.out.println("Tamañno sigma " + sigma.size() );
+        //System.out.println("Tamañno sigma " + sigma.size() );
+        contenidoLista="";
         for(String s: sigma ){
             
-            contenidoLista=contenidoLista+ s + "→";
+            contenidoLista=contenidoLista +s + "→";
             transi = transiciones.get(s);
             for(String b: transi){
             con++;
             if(con==transi.size()){
-                contenidoLista= contenidoLista + b;
+                contenidoLista= contenidoLista + b+"\n";
             }else{
-                contenidoLista= contenidoLista + b + "/";
+                contenidoLista= contenidoLista + b + "/" ;
             }
             }
             con=0;
             contenidoLista= contenidoLista;
         }
-        System.out.println("Contador " + con);
+        //System.out.println("Contador " + con);
                 System.out.println(contenidoLista);
         chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"+ "\n" + contenidoLista);
 
+    }
+    
+    
+    public void esVariableInutil(List<String> vnt){
+        List<String> variablesNtYT= Stream
+                .concat(vnt.stream(), variablesTerminales.stream())
+                .collect(Collectors.toList());
+        List<String> transccionesEliminar=new ArrayList<>();
+        List<String> transicionesValues=new ArrayList<>();
+        //keys.stream().map(t->t.replaceAll("\\n\\r", ""));
+                //keys.stream().forEach(ss->System.out.println("Gregorio:"+ss.trim()));  
+         for(String tran: vnt){
+                    System.out.println("Imprimir bien:"+tran.equals("B"));
+                }
+        //añado las Vt y Vnt a una misma lista
+        /*for(String s: variablesTerminales){
+            variablesNtYT.add(s);
+        }*/
+        variablesNtYT.forEach(g->System.out.println("Variables: "+g));
+        vnt.stream().forEach(ss->System.out.println("Key:"+ss));
+        //System.out.println(keys.size());
+        //Recorer el map para validar variables inutiles
+        for(String key: vnt){
+            transicionesValues=transiciones.get(key);
+            transicionesValues.stream().forEach(ss->System.out.println("Key: "+key + "- Value: "+ss));
+            //Recoro la lista con las transicciones de cada key
+            for(String b: transicionesValues){
+               System.out.println("Key map: " +key+ " transicion: " + b);
+               String[] transiccionSepara = b.split("");
+               //Arrays.stream(transiccionSepara).forEach(f-> System.out.println("Split al string " +f));
+                boolean encontro = Arrays.stream(transiccionSepara)
+                        .allMatch(t-> EstaEnVtVnt(variablesNtYT, t));
+                System.out.println("Encontro Key:"+key+ " -Value: "+b+" " +encontro); 
+                if(!encontro){
+                transccionesEliminar.add(b);
+                chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n" +"Se elimina de la transicion " + key + " la variable inutil: "+b );
+
+                }
+            }
+            if(!transccionesEliminar.isEmpty()){
+             for(String borrar: transccionesEliminar){
+                transicionesValues.remove(borrar);
+
+             }
+             transiciones.put(key, transicionesValues);
+            }
+        }
+        //Key del map para comparar con el original
+        //List<String> imprimirOrden=ImprimirEnOrden(vnt);
+        
+        //imprimirOrden.stream().forEach(m->System.out.println("Orden de generadoras: " +m));
+        imprimirMap(vnt);
+        transccionesEliminar.stream().forEach(t->System.out.println("Transicion a eliminar:" +t));
+
+    }
+    
+    public boolean EstaEnVtVnt(List<String> variables, String dato){
+        boolean a=variables.stream().anyMatch(t-> dato.equals(t));
+        System.out.println("Dato:" +dato+ " Resultado: " + a);
+        return a;
     }
     
 
