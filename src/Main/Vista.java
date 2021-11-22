@@ -34,6 +34,7 @@ public class Vista extends javax.swing.JFrame {
      String contenidoLista="";
      String[] cadenaSplit;
      List<String> probando = Arrays.asList("Gregorio","Perez","Jose");
+     int contadorParaNoGeneradora=0;
 
 
     public Vista() {
@@ -216,8 +217,6 @@ public class Vista extends javax.swing.JFrame {
         
         chomsky.TextArea.setText("Sigma sus Transiciones ...." +"\n" );
         guardarTransiciones(TextSigma.getText());
-        
-       
 
         chomsky.setVisible(true);
         
@@ -260,57 +259,65 @@ public class Vista extends javax.swing.JFrame {
                .map(tra-> tra.split("→"))
                .collect(Collectors.toMap(entry-> entry[0].trim(),entry-> convertirSigma(entry[1])));
         System.out.println(transiciones);
-        
-        /*for(String cadena: az){
-            String[]cadenaSplit= cadena.split("→");
-            System.out.println("Key:"+cadenaSplit[0]+" Value:"+cadenaSplit[1]);
-            transiciones.put(cadenaSplit[0], convertirSigma(cadenaSplit[1]));
 
-            
-        }*/
-
-        
         transiciones.entrySet()
                 .stream()
                 .forEach(e-> generadores(e.getKey(),e.getValue()));
         
-        chomsky.TextArea.setText(chomsky.TextArea.getText() +"\n" + "\n" + "\n" +"Eliminando no generadoras" +"\n");
-        //borrarNoGeneradoras.remove(-1);
+
         //System.out.println("Index de " + borrarNoGeneradoras.indexOf("SS"));
+        contadorParaNoGeneradora= 0;
         borrarNoGeneradoras.stream()
                 .forEach(bTran-> {
                     System.out.println(bTran);
                     System.out.println(varInicial);
                     if(!bTran.equals(varInicial)){
                         System.out.println("Probando q llega en no generadoras: "+ bTran);
-                    chomsky.TextArea.setText(chomsky.TextArea.getText() +  bTran +" no es generadora");
+                        if(esRecursiva(bTran)){
+                            contadorParaNoGeneradora++;
+                          if(contadorParaNoGeneradora==1){
+                              chomsky.TextArea.setText(chomsky.TextArea.getText() +"\n" + "\n" + "\n" +"Eliminando no generadoras" +"\n");
+                          }
+                          chomsky.TextArea.setText(chomsky.TextArea.getText() +  bTran +" no es generadora");
+                          transiciones.remove(bTran);
+                        }
                     
-                    transiciones.remove(bTran);
                     }
                     });
         
-        //Imprimir en orden
-        List<String> TransicionesGeneran=obtenerKeyMap(transiciones);
+         List<String> TransicionesGeneran=obtenerKeyMap(transiciones);
         
         List<String> imprimirOrden=ImprimirEnOrden(TransicionesGeneran);
-        
+        //Imprimir en orden
+        if(contadorParaNoGeneradora==0){
+        }else{
         //imprimirOrden.stream().forEach(m->System.out.println("Orden de generadoras: " +m));
         imprimirMap(imprimirOrden);
+        }
         chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"+ "\n" +"Se elimina Variables inutiles"+ "\n");
         esVariableInutil(imprimirOrden);
-        
-        
-        //Aqui comienza a validar variables inutiles
-        
-        
-        
-        /*String ar = "Gregorio";
-        String[] transiccionSepara = ar.split("");
-        Arrays.stream(transiccionSepara).forEach(f-> System.out.println("Split al string " +f));
-        boolean encontro = Arrays.stream(transiccionSepara)
-                .anyMatch(t-> t.equals("G"));
-        //System.out.println("Encontro "+ encontro);*/
     }
+    
+    public boolean esRecursiva(String key){
+        List<String> tra= new ArrayList<>();
+        List<Boolean> verda= new ArrayList<>();
+        tra=transiciones.get(key);
+        
+        for(String b: tra){
+               System.out.println("Key map: " +key+ " transicion: " + b);
+               String[] transiccionSeparas = b.split("");
+               //Arrays.stream(transiccionSepara).forEach(f-> System.out.println("Split al string " +f));
+                verda.add( Arrays.stream(transiccionSeparas)
+                        .anyMatch(s->s.equals(key)));
+                        //.allMatch(t-> recorrerTransicion(tra, t));
+        }
+        
+        boolean b = verda.stream().allMatch(val->val==true);
+        
+        return b;
+    }
+    
+
     
     
     public List<String> convertirSigma(String a){
@@ -322,26 +329,17 @@ public class Vista extends javax.swing.JFrame {
     }
     
     public void generadores(String key,List<String> sigma){
-        
-        /*sigma.stream()
-                .forEach(t->System.out.println(esGenerador(t)));*/
         List<Boolean> seEncuentra=new ArrayList<Boolean>();
         for(String transiccion: variablesTerminales){
         boolean v=sigma.stream()
                 .anyMatch(t->t.equals(transiccion));
         seEncuentra.add(v);
-        
         }
         
         boolean c= seEncuentra.stream().anyMatch(t->t==true);
-        //System.out.println("Es verdadera generadora" + c) ;
         if(c==false){
         borrarNoGeneradoras.add(key);
         }
-        //if(c==false){
-        //    chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n" + "La transicion " +key + " no es generadora");
-        //transiciones.remove(key);
-        //}
         
     }
     
@@ -408,19 +406,12 @@ public class Vista extends javax.swing.JFrame {
                 .concat(vnt.stream(), variablesTerminales.stream())
                 .collect(Collectors.toList());
         List<String> transccionesEliminar=new ArrayList<>();
-        List<String> transicionesValues=new ArrayList<>();
-        //keys.stream().map(t->t.replaceAll("\\n\\r", ""));
-                //keys.stream().forEach(ss->System.out.println("Gregorio:"+ss.trim()));  
+        List<String> transicionesValues=new ArrayList<>();  
          for(String tran: vnt){
                     System.out.println("Imprimir bien:"+tran.equals("B"));
                 }
-        //añado las Vt y Vnt a una misma lista
-        /*for(String s: variablesTerminales){
-            variablesNtYT.add(s);
-        }*/
         variablesNtYT.forEach(g->System.out.println("Variables: "+g));
         vnt.stream().forEach(ss->System.out.println("Key:"+ss));
-        //System.out.println(keys.size());
         //Recorer el map para validar variables inutiles
         for(String key: vnt){
             transicionesValues=transiciones.get(key);
