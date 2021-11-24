@@ -34,11 +34,9 @@
               <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="1" max="-2" attributes="0">
                   <Component id="InputVariablesTerminales" pref="256" max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="TextVariablesTerminales" max="32767" attributes="0"/>
-                      <Component id="jScrollPane1" pref="256" max="32767" attributes="0"/>
-                      <Component id="TextVariableInicial" max="32767" attributes="0"/>
-                  </Group>
+                  <Component id="TextVariablesTerminales" alignment="0" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" pref="256" max="32767" attributes="0"/>
+                  <Component id="TextVariableInicial" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
           </Group>

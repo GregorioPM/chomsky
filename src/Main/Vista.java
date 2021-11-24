@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.JOptionPane;
@@ -26,11 +25,12 @@ public class Vista extends javax.swing.JFrame {
      */
     
     Chomsky chomsky=new Chomsky();
-    List<String> variablesNoTerminales;
-    List<String> variablesTerminales;
+    List<String> variablesNoTerminales=new ArrayList<>();
+    List<String> variablesTerminales=new ArrayList<>();
+    List<String> transcionesSigma= new ArrayList<>();
      Map<String,List<String>> transiciones=new HashMap<>();
      List<String> borrarNoGeneradoras=new ArrayList<>();
-     String varInicial;
+     String varInicial="";
      String contenidoLista="";
      String[] cadenaSplit;
      List<String> probando = Arrays.asList("Gregorio","Perez","Jose");
@@ -39,6 +39,7 @@ public class Vista extends javax.swing.JFrame {
 
     public Vista() {
         initComponents();
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -172,6 +173,21 @@ public class Vista extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         //this.setVisible(false);
+        
+        borrarNoGeneradoras.removeAll(borrarNoGeneradoras);
+        if(!borrarNoGeneradoras.isEmpty()){
+        borrarNoGeneradoras.stream().forEach(ss->System.out.println("Imprime no generadora "+ ss));
+        }
+        transcionesSigma.removeAll(transcionesSigma);
+        variablesTerminales.removeAll(variablesTerminales);
+        variablesNoTerminales.removeAll(variablesNoTerminales);
+        
+        if(!variablesNoTerminales.isEmpty()){
+            for(String b: variablesTerminales){
+                transiciones.remove(b);
+            }
+        }
+        
         chomsky.TextArea.setText("");
         chomsky.setVisible(false);
         String varNoTer= InputVariablesTerminales.getText();
@@ -198,7 +214,7 @@ public class Vista extends javax.swing.JFrame {
         System.out.println(estaVarInicial);
         chomsky.setString(TextSigma.getText());
         
-        Map<String, List<String>> transiciones=null;
+        transiciones=null;
         
         //Asignar sigma a un map
                 String a;
@@ -258,13 +274,18 @@ public class Vista extends javax.swing.JFrame {
        transiciones= az.stream()
                .map(tra-> tra.split("→"))
                .collect(Collectors.toMap(entry-> entry[0].trim(),entry-> convertirSigma(entry[1])));
-        System.out.println(transiciones);
+        System.out.println("La transcion del Map: \n" +transiciones);
 
+        transcionesSigma=obtenerTransicionesSigma(transiciones);
+        
+        transcionesSigma.stream().forEach(atr->System.out.println("Transiciones Sigma: "+atr));
+
+        //asignar a generadoras las q no son
         transiciones.entrySet()
                 .stream()
                 .forEach(e-> generadores(e.getKey(),e.getValue()));
         
-
+        
         //System.out.println("Index de " + borrarNoGeneradoras.indexOf("SS"));
         contadorParaNoGeneradora= 0;
         borrarNoGeneradoras.stream()
@@ -278,8 +299,12 @@ public class Vista extends javax.swing.JFrame {
                           if(contadorParaNoGeneradora==1){
                               chomsky.TextArea.setText(chomsky.TextArea.getText() +"\n" + "\n" + "\n" +"Eliminando no generadoras" +"\n");
                           }
-                          chomsky.TextArea.setText(chomsky.TextArea.getText() +  bTran +" no es generadora");
+                          
+                          chomsky.TextArea.setText(chomsky.TextArea.getText() +  bTran +" no es generadora \n");
+                          
+                            System.out.println("Eliminar despues de validar recursivida: " +bTran);
                           transiciones.remove(bTran);
+                            System.out.println("Despues de eliminar la key: "+bTran +" \n" + transiciones );
                         }
                     
                     }
@@ -301,15 +326,17 @@ public class Vista extends javax.swing.JFrame {
     public boolean esRecursiva(String key){
         List<String> tra= new ArrayList<>();
         List<Boolean> verda= new ArrayList<>();
+        verda.removeAll(verda);
         tra=transiciones.get(key);
         
         for(String b: tra){
                System.out.println("Key map: " +key+ " transicion: " + b);
                String[] transiccionSeparas = b.split("");
-               //Arrays.stream(transiccionSepara).forEach(f-> System.out.println("Split al string " +f));
+               Arrays.stream(transiccionSeparas).forEach(f-> System.out.println("Split al string " +f));
                 verda.add( Arrays.stream(transiccionSeparas)
                         .anyMatch(s->s.equals(key)));
                         //.allMatch(t-> recorrerTransicion(tra, t));
+                verda.stream().forEach(sx->System.out.println("Validando el boolean en Recursiva: " +sx));
         }
         
         boolean b = verda.stream().allMatch(val->val==true);
@@ -328,16 +355,28 @@ public class Vista extends javax.swing.JFrame {
     return g;
     }
     
+    public List<String> obtenerTransicionesSigma(Map<String,List<String>> transicion){
+        List<String> traSigma = new ArrayList<>();
+        transicion.entrySet()
+                .stream()
+                .forEach(t-> traSigma.add(t.getKey()));
+        return traSigma;
+    }
+    
     public void generadores(String key,List<String> sigma){
         List<Boolean> seEncuentra=new ArrayList<Boolean>();
+        seEncuentra.removeAll(seEncuentra);
         for(String transiccion: variablesTerminales){
+            //System.out.println("Metodo generadores Transiciones: " +transiccion);
         boolean v=sigma.stream()
                 .anyMatch(t->t.equals(transiccion));
         seEncuentra.add(v);
         }
-        
+        System.out.println("Metodo generadores Key: " +key);
         boolean c= seEncuentra.stream().anyMatch(t->t==true);
         if(c==false){
+                    System.out.println("Metodo generadores si toca borrar Key: " +key);
+
         borrarNoGeneradoras.add(key);
         }
         
@@ -359,7 +398,7 @@ public class Vista extends javax.swing.JFrame {
         List<String> eliminar = new ArrayList<>();
         List<String> mostrar = new ArrayList<>();
 
-        for(String a: variablesNoTerminales){
+        for(String a: transcionesSigma){
             boolean val= sigma.stream().anyMatch(t->t.equals(a));
             if(!val){
             eliminar.add(a);
