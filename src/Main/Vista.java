@@ -334,11 +334,116 @@ public class Vista extends javax.swing.JFrame {
     }
     
     public void noAlcanzable(List<String> sigma){
-    
+        List<String> traNo, tranB= new ArrayList<>();
+        tranB= obtenerTransicionesSigma(transiciones);
+        //tranB.stream().forEach(r->System.out.println("Lo obtuve los key del map:" +r));
+        traNo= transiciones.get(varInicial);
         sigma.stream().forEach(s->System.out.println("Llega a no alcanzable: "+s));
         
-        System.out.println("Transacciones en no alcanzable \n" +transiciones);
+        Map<String,Boolean> noAlcanzable= new HashMap<String,Boolean>();
+        noAlcanzable= sigma.stream()
+                .map(a->a.trim())
+                .collect(Collectors.toMap(a->a,a->Boolean.FALSE));
+        noAlcanzable.remove(varInicial);
         
+        boolean esta=false;
+        noAlcanzable.entrySet().stream().forEach(s->System.out.println("Lo que hay en el map de validacion Key: "+s.getKey() + " Value: "+s.getValue()));
+        for(String keyTran: sigma){
+            if(!keyTran.equals(varInicial)){
+                tranB=transiciones.get(varInicial);
+                for(String valueTran: tranB){
+                    System.out.println("key Prueba1: "+keyTran +" No alcanzable produccion: "+valueTran);
+                    String[] transiccionSeparas = valueTran.split("");
+                    Arrays.stream(transiccionSeparas).forEach(b->System.out.println("Key: "+ keyTran + " Value: " +b));
+                    esta= Arrays.stream(transiccionSeparas).anyMatch(i->i.equals(keyTran));
+                    if(esta==true){
+                        noAlcanzable.put(keyTran, Boolean.TRUE);
+                    }
+                    System.out.println("key Prueba2: " + keyTran + " Value: "+esta);
+                }   
+            }   
+        }
+        List<String> sonAlcanzables= new ArrayList<>();
+        List<String> noSonAlcanzables= new ArrayList<>();
+
+        noAlcanzable.entrySet()
+                .stream()
+                .forEach(f->{
+                    if(f.getValue()==true){
+                    sonAlcanzables.add(f.getKey());
+                    }else{
+                    noSonAlcanzables.add(f.getKey());
+                    }
+        });
+        
+        sonAlcanzables.stream().forEach(n->System.out.println("Es alcanzable Key: " + n));
+        noSonAlcanzables.stream().forEach(j->System.out.println("No son alcanzables Key: " + j));
+        
+        noAlcanzable.entrySet().stream().forEach(s->System.out.println("Lo que hay en el map de validacion despues Key: "+s.getKey() + " Value: "+s.getValue()));
+        
+        List<String> noSonAlcanzablesValidado= esAlcanzable(sonAlcanzables, noSonAlcanzables);
+        //System.out.println("Transacciones en no alcanzable \n" +transiciones);
+        if(!noSonAlcanzablesValidado.isEmpty()){
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n \n" + " Eliminando transiciones no alcanzables... \n");
+        }
+        for(String son: noSonAlcanzablesValidado){
+            System.out.println("Se elimino transicion no alcanzable: "+ son);
+            chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"  + " Se elimino la transicion " +son + " no es alcanzable" );
+            transiciones.remove(son);
+        }
+        List<String> TransicionesGeneranSigmae=obtenerKeyMap(transiciones);
+        List<String> imprimirOrdenSigmae=ImprimirEnOrden(TransicionesGeneranSigmae);
+        imprimirMap(imprimirOrdenSigmae);
+        
+        System.out.println("Map: \n"+transiciones);
+    }
+    
+    //Recoro las otras transicionas para validar si se encuentra en las derivadas
+    public List<String> esAlcanzable(List<String> sonAlcanzables, List<String> noSonAlcanzables){
+    List<Boolean> esAlcanzableX2 = new ArrayList<>();
+    List<String> transicion,guardar= new ArrayList<>();
+    if(!esAlcanzableX2.isEmpty()){
+        esAlcanzableX2.removeAll(esAlcanzableX2);
+    }
+    boolean ar=false;
+    for(String noAlcanzable: noSonAlcanzables){
+        String key= noAlcanzable;
+        //System.out.println("Key no alcanzable en el metodo: " +key);
+        if(ar==false){
+        for(String alcanzable: sonAlcanzables){
+            
+            transicion=transiciones.get(alcanzable);
+            //System.out.println("Key no alcanzable en el metodo primer for: " +key + " alcanzable Key: " + alcanzable);
+            for(String value: transicion){
+                System.out.println("Key no alcanzable en el metodo primer for: " +key + " alcanzable Key: " + alcanzable + " value: " + value);
+                String[] transiccionSeparas = value.split("");
+                esAlcanzableX2.add(Arrays.stream(transiccionSeparas).anyMatch(i->i.equals(key)));
+            }
+        }
+        //Si encuentra algun verdadero 
+        esAlcanzableX2.stream().forEach(g->System.out.println("Valores para validar No alcanzable Key: " + key + " valor: " +g));
+        boolean otraVez = esAlcanzableX2.stream().anyMatch(n->n==true);
+        System.out.println("Si es alcanzable o no key: " + key + " value:" + otraVez );
+        if(otraVez==true){
+            guardar.add(key);
+            ar=true;
+            System.out.println("Entro y se salio");
+        }
+        }
+    }
+    
+    for(String h: guardar){
+        noSonAlcanzables.remove(h);
+        sonAlcanzables.add(h);
+        System.out.println("Entro y si es alcanzable: " +h);
+        if(noSonAlcanzables.size()>=1){
+            System.out.println("Entro a la recursivida");
+            noSonAlcanzables.stream().forEach(k->System.out.println("Recursividad no alcanzable key:" + h));
+             esAlcanzable(sonAlcanzables, noSonAlcanzables);
+         }
+    }
+
+    return noSonAlcanzables;
     }
     
     public boolean esRecursiva(String key){
@@ -471,7 +576,7 @@ public class Vista extends javax.swing.JFrame {
             contenidoLista= contenidoLista;
         }
         //System.out.println("Contador " + con);
-                System.out.println("Lo que hay en contenido Lista: "+contenidoLista);
+                //System.out.println("Lo que hay en contenido Lista: "+contenidoLista);
         
         }
         chomsky.TextArea.setText(chomsky.TextArea.getText()  + contenidoLista);
@@ -488,11 +593,11 @@ public class Vista extends javax.swing.JFrame {
                     System.out.println("Imprimir bien:"+tran.equals("B"));
                 }
         variablesNtYT.forEach(g->System.out.println("Variables: "+g));
-        vnt.stream().forEach(ss->System.out.println("Key:"+ss));
+        vnt.stream().forEach(ss->System.out.println("Key Prueba3:"+ss));
         //Recorer el map para validar variables inutiles
         for(String key: vnt){
             transicionesValues=transiciones.get(key);
-            transicionesValues.stream().forEach(ss->System.out.println("Key: "+key + "- Value: "+ss));
+            transicionesValues.stream().forEach(ss->System.out.println("Key Prueba4: "+key.trim() + " Value: "+ss));
             //Recoro la lista con las transicciones de cada key
             for(String b: transicionesValues){
                System.out.println("Key map: " +key+ " transicion: " + b);
