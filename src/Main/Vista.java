@@ -236,7 +236,7 @@ public class Vista extends javax.swing.JFrame {
         
         chomsky.TextArea.setText(" Sigma sus Transiciones ...."  );
         guardarTransiciones(TextSigma.getText());
-
+        detectarNulas();
         chomsky.setVisible(true);
         
         }
@@ -331,6 +331,8 @@ public class Vista extends javax.swing.JFrame {
         chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"+ "\n" +" Se elimina Variables inutiles"+ "\n");
         esVariableInutil(imprimirOrden);
         noAlcanzable(imprimirOrden);
+        
+        
     }
     
     public void noAlcanzable(List<String> sigma){
@@ -445,6 +447,97 @@ public class Vista extends javax.swing.JFrame {
 
     return noSonAlcanzables;
     }
+    
+
+    
+    //Producciones Nulas
+    public void detectarNulas(){
+        List<String> transicion,keys= new ArrayList<>();
+        List<String> sonNulas2= new ArrayList<>();
+        List<String> nulasObtenidas= new ArrayList<>();
+
+
+        keys= obtenerKeyMap(transiciones);
+        boolean verdad,verdad2= false;
+        for (String k: keys){
+            transicion= transiciones.get(k);
+            verdad= transicion.stream().anyMatch(h->h.equals("ε"));
+            verdad2= transicion.stream().anyMatch(hr->hr.equals("λ"));
+            if(verdad==true || verdad2==true){
+            sonNulas2.add(k);
+            }
+        }
+        sonNulas2.stream().forEach(j->System.out.println("Son nulas Key:" + j));
+        if(!sonNulas2.isEmpty()){
+            nulasObtenidas=detectarNulasCombinadas(keys,sonNulas2);
+        }
+        
+        
+        nulasObtenidas.stream().forEach(m->System.out.println("Nulas obtenidas Key: " +m));
+        eliminarNulas(nulasObtenidas);
+    }
+    
+    public List<String> detectarNulasCombinadas(List<String> keys, List<String> nulas){
+        List<String> transi= new ArrayList<>();
+        boolean verdad,recur=false;
+        int a = nulas.size();
+        //System.out.println("Tamaño de list nulas" + a);
+        for(String key: keys){
+            if(recur==false){
+                transi=transiciones.get(key);
+                verdad=false;
+                for(String tra: transi){
+                    if(verdad==false){
+
+                        verdad=estaEnLaTransicionNula(tra,nulas);
+                        //System.out.println("La transcion Prueba1 "+key+" Es: " + verdad);
+                        if(verdad==true && !key.equals(varInicial)){
+                            //System.out.println("Añado al key: " + key);
+                        nulas.add(key);
+                        //nulas.stream().forEach(o->System.out.println("Se prueba que es nula: " +o));
+                        recur=true;
+                        //detectarNulasCombinadas(keys, nulas);
+                        }
+                    }
+                }
+            }
+        }
+        for(String k: nulas){
+            keys.remove(k);
+        }
+        
+        //System.out.println("Tamaño de list nulas " + nulas.size());
+
+        nulas.stream().forEach(j->System.out.println("La transicion: " +j+ " es Nula despues de detectar: "  ));
+        keys.stream().forEach(i->System.out.println("Despues de remover key:" + i));
+        if(nulas.size()>a){
+            detectarNulasCombinadas(keys, nulas);
+        }
+        
+        return nulas;
+    }
+        
+    public boolean estaEnLaTransicionNula(String a,List<String> nulas){
+        //Separo la produccion
+        String[] simbolos= a.split("");
+        boolean b=Arrays.stream(simbolos)
+                .allMatch(g->estaEnElSimboloNulo(g, nulas));
+        System.out.println("La produccion : "+ a + " Es:" +b);
+    return b;
+    }
+    
+    public boolean estaEnElSimboloNulo(String simbolo,List<String> nulas){
+        boolean a= nulas.stream().anyMatch(b->b.equals(simbolo));
+        System.out.println("La letra "+simbolo + " es:" +a);
+    return a;
+    }
+    
+    
+     //Despues de detectar las nulas empezar a eliminar   
+    public void eliminarNulas(List<String> nulasObtenidas){
+    
+    }
+    
     
     public boolean esRecursiva(String key){
         List<String> tra= new ArrayList<>();
