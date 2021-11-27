@@ -36,6 +36,9 @@ public class Vista extends javax.swing.JFrame {
      String[] cadenaSplit= new String[4];
      List<String> probando = new ArrayList<>();
      int contadorParaNoGeneradora=0;
+     List<String> produccionesNuevas = new ArrayList<>();
+     Map<String,List<String>> mapNuevosSimbolos= new HashMap<>();
+
 
 
     public Vista() {
@@ -236,7 +239,10 @@ public class Vista extends javax.swing.JFrame {
         
         chomsky.TextArea.setText(" Sigma sus Transiciones ...."  );
         guardarTransiciones(TextSigma.getText());
+        
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"+ "\n" +" Se elimina producciones nulas"+ "\n");
         detectarNulas();
+        
         chomsky.setVisible(true);
         
         }
@@ -330,6 +336,8 @@ public class Vista extends javax.swing.JFrame {
         }
         chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"+ "\n" +" Se elimina Variables inutiles"+ "\n");
         esVariableInutil(imprimirOrden);
+        
+        
         noAlcanzable(imprimirOrden);
         
         
@@ -464,6 +472,12 @@ public class Vista extends javax.swing.JFrame {
             verdad= transicion.stream().anyMatch(h->h.equals("ε"));
             verdad2= transicion.stream().anyMatch(hr->hr.equals("λ"));
             if(verdad==true || verdad2==true){
+                if(verdad==true){
+                chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n" +" La transicion "+ k + " es nula por tener la produccion  'ε'");
+                }
+                if(verdad2==true){
+                chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n" +" La transicion "+ k + " es nula por tener la produccion  'λ'");
+                }
             sonNulas2.add(k);
             }
         }
@@ -474,6 +488,9 @@ public class Vista extends javax.swing.JFrame {
         
         
         nulasObtenidas.stream().forEach(m->System.out.println("Nulas obtenidas Key: " +m));
+        /*nulasObtenidas.stream()
+                .forEach(m-> chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n" +" La Produccion "+ m + " Es nula"));*/
+
         eliminarNulas(nulasObtenidas);
     }
     
@@ -493,6 +510,7 @@ public class Vista extends javax.swing.JFrame {
                         //System.out.println("La transcion Prueba1 "+key+" Es: " + verdad);
                         if(verdad==true && !key.equals(varInicial)){
                             //System.out.println("Añado al key: " + key);
+                        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n" +" La transicion "+ key + " es nula por tener la produccion " + tra);
                         nulas.add(key);
                         //nulas.stream().forEach(o->System.out.println("Se prueba que es nula: " +o));
                         recur=true;
@@ -535,8 +553,76 @@ public class Vista extends javax.swing.JFrame {
     
      //Despues de detectar las nulas empezar a eliminar   
     public void eliminarNulas(List<String> nulasObtenidas){
-    
+      
+        List<String> tra= obtenerKeyMap(transiciones);
+        List<String> produccionesRecorrer=new ArrayList<>();
+        
+        for(String t: tra){
+        mapNuevosSimbolos.put(t, produccionesRecorrer);
+        }
+        
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n" );
+        
+        boolean esta= false;
+        for(String nulaKey: nulasObtenidas){
+            System.out.println("Nula obtenida Key: " +nulaKey);
+            for(String key: tra){
+             produccionesRecorrer=transiciones.get(key);
+             //produccionesNuevas.removeAll(produccionesNuevas);
+                for(String produccion: produccionesRecorrer){
+                    String[] produccionesSeparadas = produccion.split("");
+                    esta = Arrays.stream(produccionesSeparadas).anyMatch(p->p.equals(nulaKey));
+                    if(esta==true){
+                        System.out.println("Si encuentra: " + nulaKey + " en produccion: " + produccion + " de la transcion: "+key);
+                    }
+                    if(esta==true){
+                        String produccionNueva="";
+                        for(String separadoValue: produccionesSeparadas){
+                            if(!separadoValue.equals(nulaKey)){
+                                produccionNueva=produccionNueva+separadoValue;
+                            }
+                        }
+                        System.out.println("Produccion nueva: " + produccionNueva);
+                        produccionesNuevas.add(produccionNueva);
+                        /*produccionesNuevas.stream().forEach(j->System.out.println("Despues de guardar: " +key + " value: "+j));
+                        List<String> jj= Arrays.asList("Gregorio","Perez");
+                       /* if(!produccionesNuevas.isEmpty()){
+                            //System.out.println("Entro si no esta vacio :" +key);
+                            /mapNuevosSimbolos.put(key, produccionesNuevas);
+                            //System.out.println("Map: \n"+mapNuevosSimbolos);
+                           
+                    }*/
+                        //producciones.add(produccionNueva);
+                    }
+                    
+                }
+                for(String p: produccionesNuevas){
+                produccionesRecorrer.add(p);
+                }
+                produccionesRecorrer.remove(" ");
+                produccionesRecorrer.remove("");
+                produccionesRecorrer.remove("ε");
+                produccionesRecorrer.remove("λ");
+
+                transiciones.put(key, produccionesRecorrer);
+                System.out.println("Map prueba: \n" +transiciones);
+                 produccionesNuevas.clear();
+            }
+            
+            chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n" +" Se elimina "+ nulaKey+ " por nula ");
+            
+             List<String> TransicionesGeneranSigma=obtenerKeyMap(transiciones);
+             List<String> imprimirOrdenSigma=ImprimirEnOrden(TransicionesGeneranSigma);
+             imprimirMap(imprimirOrdenSigma);
+        }
+       produccionesNuevas.stream().forEach(l->System.out.println("Producciones nuevas Key: " + l));
+
+        System.out.println("Map Nuevos Simbolos \n"+mapNuevosSimbolos );
+        System.out.println("Map: \n"+transiciones );
+  
+        
     }
+    
     
     
     public boolean esRecursiva(String key){
