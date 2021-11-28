@@ -5,7 +5,6 @@
  */
 package Main;
 
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,13 +13,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.JOptionPane;
-import javax.swing.SpringLayout;
 
 /**
  *
  * @author GREGORIO
  */
-public class Vista extends javax.swing.JFrame {
+public class Vista1 extends javax.swing.JFrame {
 
     /**
      * Creates new form Vista
@@ -43,7 +41,7 @@ public class Vista extends javax.swing.JFrame {
 
 
 
-    public Vista() {
+    public Vista1() {
         initComponents();
         this.setLocationRelativeTo(null);
     }
@@ -125,10 +123,9 @@ public class Vista extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(InputVariablesTerminales, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(TextVariablesTerminales)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
-                        .addComponent(TextVariableInicial)))
+                    .addComponent(TextVariablesTerminales, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
+                    .addComponent(TextVariableInicial, javax.swing.GroupLayout.Alignment.LEADING))
                 .addGap(22, 22, 22))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -245,7 +242,7 @@ public class Vista extends javax.swing.JFrame {
         chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"+ "\n" +" Se elimina producciones nulas"+ "\n");
         detectarNulas();
         
-        chomsky.TextArea.setText(chomsky.TextArea.getText() + " \n \n " + " ---> REEMPLAZANDO UNITARIAS .... \n ");
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + " \n \n " + " Reemplazando Unitarias.... ");
         identificarProduccionesUnitarias();
         
         chomsky.setVisible(true);
@@ -847,77 +844,49 @@ public class Vista extends javax.swing.JFrame {
     
     public void reemplazarUnitaria(List<String> unitarias,List<String> keys){
         List<String> producciones=new ArrayList<>();
-        
         List<String> produccionesSigma=new ArrayList<>();
         List<String> produccionesSigmaU=new ArrayList<>();
-        List<String> recorrers=new ArrayList<>();
         List<String> produccionesSigmaK=new ArrayList<>();
-        List<String> sigmaKeys=obtenerKeyMap(transiciones);
 
         List<String> produccionesSigmaRecorrer=new ArrayList<>();
         List<String> eliminarUnitarias=new ArrayList<>();
-        boolean a,b,c,d,bidi,j,i= false;
+        boolean a,b,c,d,bidi= false;
         String fs="";
-        for(String ke: sigmaKeys){
-            System.out.println("KEY SIGMA: "+ke); 
-            for(String unitaria: unitarias){
-                producciones=transiciones.get(unitaria);
-                j=producciones.stream().anyMatch(k->k.equals(ke));
-                if(j==true){
-                    for(String produccion: producciones){
-                        //obtengo la produccion unitaria de la transicion
-                        if(produccion.equals(ke)){
-                            System.out.println("PRODUCCION : " + produccion + " de la transicion "+ke);
-
-                            a=keys.stream().anyMatch(p->p.equals(produccion));
-                            fs=produccion;
-                            if(a==true){
-                                //valido q la produccion no tenga tampoco una unitaria
-                                b=unitarias.stream().anyMatch(p->p.equals(produccion));
-                                if(b==false){
-                                    i=true;
-                                    produccionesSigmaRecorrer= transiciones.get(produccion);
-                                    for(String p: produccionesSigmaRecorrer){
-                                        produccionesSigma.add(p);
-                                    }
-                                }
-                            }
+        for(String unitaria: unitarias){
+            producciones=transiciones.get(unitaria);
+            for(String produccion: producciones){
+                //obtengo la produccion unitaria de la transicion
+                System.out.println("PRODUCCION : " + produccion);
+                a=keys.stream().anyMatch(p->p.equals(produccion));
+                fs=produccion;
+                if(a==true){
+                    //valido q la produccion no tenga tampoco una unitaria
+                    b=unitarias.stream().anyMatch(p->p.equals(produccion));
+                    if(b==false){
+                        produccionesSigmaRecorrer= transiciones.get(produccion);
+                        for(String p: produccionesSigmaRecorrer){
+                            produccionesSigma.add(p);
                         }
                     }
                 }
-                //if(i==true){
-                    if(!produccionesSigma.isEmpty()){
-
-                    for(String pAnadir: produccionesSigma){
-                     producciones.add(pAnadir);
-                    }
-                    producciones=producciones.stream().distinct().collect(Collectors.toList());
-                    producciones.remove(ke);
-                    chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n Reemplazando: " + fs + " de la transicion "+unitaria);
-                    
-                    
-                    
-                    
-
-                    transiciones.put(unitaria, producciones);
-                    produccionesSigma.clear();
-                    System.out.println("Map despues de añadir unitaria \n"+transiciones);
-                    }
-                //}
-                
-                
             }
-            if(i==true){
-                String lista=imprimirListString(fs);
-                chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n " + lista);
-                List<String> TransicionesGeneranSigma=obtenerKeyMap(transiciones);
-                    List<String> imprimirOrdenSigma=ImprimirEnOrden(TransicionesGeneranSigma);
-                    imprimirMap(imprimirOrdenSigma);
+            if(!produccionesSigma.isEmpty()){
+                
+                for(String pAnadir: produccionesSigma){
+                 producciones.add(pAnadir);
                 }
-            //chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n ");
-            i=false;
+                producciones=producciones.stream().distinct().collect(Collectors.toList());
+                chomsky.TextArea.setText(chomsky.TextArea.getText() + " \n \n " + " Reemplazando: " + fs);
+                
+                transiciones.put(unitaria, producciones);
+                List<String> TransicionesGeneranSigma=obtenerKeyMap(transiciones);
+                List<String> imprimirOrdenSigma=ImprimirEnOrden(TransicionesGeneranSigma);
+                imprimirMap(imprimirOrdenSigma);
+                produccionesSigma.clear();
+                System.out.println("Map despues de añadir unitaria \n"+transiciones);
+            }
         }
-        
+        /*
         //Valido q la transiccion no tiene unitarias y la añado a la lista para eliminarala de unitarias
         for(String unitaria: unitarias){
             producciones=transiciones.get(unitaria);
@@ -988,12 +957,6 @@ public class Vista extends javax.swing.JFrame {
          if(!produccionesSigmaU.isEmpty() && !produccionesSigmaK.isEmpty()){
                     System.out.println("Unitaria en validaacion "+ keyUnitaria);
                     System.out.println("Key en validaacion "+ keyProduccion);
-                    chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n Reemplazando: " + keyProduccion + " de la transicion "+keyUnitaria);
-                    chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n Reemplazando: " + keyUnitaria + " de la transicion "+keyProduccion);
-                    String lista=imprimirListString(keyUnitaria);
-                    chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n " + lista);
-                    String lista2=imprimirListString(keyProduccion);
-                    chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n " + lista2);
                     List<String> obtenerProducciones= transiciones.get(keyUnitaria);
                     //producciones.clear();
                     producciones.stream().forEach(gg->System.out.println("Producciones de unitarias: "+gg));
@@ -1004,7 +967,6 @@ public class Vista extends javax.swing.JFrame {
                     //producciones.remove(keyUnitaria);
                     obtenerProducciones=obtenerProducciones.stream().distinct().collect(Collectors.toList());
                     obtenerProducciones.remove(keyProduccion);
-                    obtenerProducciones.remove(keyUnitaria);
                     List<String> prueba= obtenerProducciones;
                     prueba.stream().forEach(gr->System.out.println("Producciones de  Prueba despues de añadir: "+gr));
                     List<String> re= Arrays.asList("Gregorio", "Perez");
@@ -1019,63 +981,18 @@ public class Vista extends javax.swing.JFrame {
                     
                     obtenerProduccionesKey=obtenerProduccionesKey.stream().distinct().collect(Collectors.toList());
                     obtenerProduccionesKey.remove(keyUnitaria);
-                    obtenerProduccionesKey.remove(keyProduccion);
                     List<String> prueba2= obtenerProduccionesKey;
                     prueba2.stream().forEach(gr->System.out.println("Producciones de  Prueba key despues de añadir: "+gr));
                     transiciones.put(keyProduccion, prueba2);
                     producciones.clear();
-                    
+                    /*
                     produccionesSigma.clear();
                     System.out.println("Map despues de añadir unitaria \n"+transiciones);
                     produccionesSigmaU.clear();
                     produccionesSigmaK.clear();
-                    
-                    List<String> TransicionesGeneranSigma=obtenerKeyMap(transiciones);
-                    List<String> imprimirOrdenSigma=ImprimirEnOrden(TransicionesGeneranSigma);
-                    imprimirMap(imprimirOrdenSigma);
-                
                     System.out.println("Map final: \n" +transiciones);
-                }
-         
-         //Valido q la transiccion no tiene unitarias y la añado a la lista para eliminarala de unitarias
-        for(String unitaria: unitarias){
-            producciones=transiciones.get(unitaria);
-            System.out.println("Entro al final " + unitaria);
-            boolean be= producciones.stream().anyMatch(g->borrarUnitaria(g, keys));
-            System.out.println("Unitaria: " + unitaria + " Value es: " +be);
-            if(be==false){
-                System.out.println("Entro a eliminar:" +unitaria);
-                eliminarUnitarias.add(unitaria);
-            }
-        }
-        
-        //Elimino de unitarias
-        for(String unitaria: eliminarUnitarias){
-            System.out.println("Se elimina unitaria:" + unitaria);
-            unitarias.remove(unitaria);    
-        }
-        
-        if(!unitarias.isEmpty()){
-            reemplazarUnitaria(unitarias, keys);
-        }
+                }*/
     
-    }
-    
-    public String imprimirListString(String key){
-        String a=key +"→";
-        int cont = 0;
-        List<String> transicions=new ArrayList<>();
-        transicions=transiciones.get(key);
-        for(String p: transicions){
-            cont++;
-        //contenidoListaInicial=contenidoListaInicial + inicial +"/";  
-            if(cont==transicions.size()){
-                a= a + p;
-            }else{
-                a= a + p + "/" ;
-            } 
-        }
-        return a;
     }
     
     public boolean borrarUnitaria(String unitaria,List<String> keys){
@@ -1109,20 +1026,21 @@ public class Vista extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Vista.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Vista1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Vista.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Vista1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Vista.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Vista1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Vista.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Vista1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Vista().setVisible(true);
+                new Vista1().setVisible(true);
             }
         });
     }
