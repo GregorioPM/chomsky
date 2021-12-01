@@ -30,16 +30,50 @@ public class Vista extends javax.swing.JFrame {
     List<String> variablesNoTerminales=new ArrayList<>();
     List<String> variablesTerminales=new ArrayList<>();
     List<String> transcionesSigma= new ArrayList<>();
-     Map<String,List<String>> transiciones=new HashMap<String,List<String>>();
-     List<String> borrarNoGeneradoras=new ArrayList<>();
-     String varInicial="";
-     String contenidoLista="";
-     String contenidoListaInicial="";
-     String[] cadenaSplit= new String[4];
-     List<String> probando = new ArrayList<>();
-     int contadorParaNoGeneradora=0;
-     List<String> produccionesNuevas = new ArrayList<>();
-     Map<String,List<String>> mapNuevosSimbolos= new HashMap<>();
+    Map<String,List<String>> transiciones=new HashMap<String,List<String>>();
+    Map<String,List<String>> transicionesfinal=new HashMap<String,List<String>>();
+    Map<String,String> variableTerminal=new HashMap<String,String>();
+    List<String> borrarNoGeneradoras=new ArrayList<>();
+    String varInicial="";
+    String contenidoLista="";
+    String contenidoListaInicial="";
+    String[] cadenaSplit= new String[4];
+    List<String> probando = new ArrayList<>();
+    int contadorParaNoGeneradora=0;
+    List<String> produccionesNuevas = new ArrayList<>();
+    Map<String,List<String>> mapNuevosSimbolos= new HashMap<>();
+    boolean entro=false;
+    int contadorNormalizaar=0;
+    int contadorNormalizar2=0;
+
+     
+     public static String subscript(int subIndice) {
+         
+         String str = String.valueOf(subIndice);
+    
+         String[] separado= str.split("");
+         System.out.println(separado.length);
+         String b="";
+         for(String sub: separado){
+             b=b+subindice(sub);
+         }
+         return b;
+        
+}
+     
+     public static String subindice(String str){
+     str = str.replaceAll("0", "₀");
+        str = str.replaceAll("1", "₁");
+        str = str.replaceAll("2", "₂");
+        str = str.replaceAll("3", "₃");
+        str = str.replaceAll("4", "₄");
+        str = str.replaceAll("5", "₅");
+        str = str.replaceAll("6", "₆");
+        str = str.replaceAll("7", "₇");
+        str = str.replaceAll("8", "₈");
+        str = str.replaceAll("9", "₉");
+        return str;
+     }
 
 
 
@@ -71,6 +105,7 @@ public class Vista extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        InputVariablesTerminales.setFont(new java.awt.Font("Monospaced", 0, 15)); // NOI18N
         InputVariablesTerminales.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 InputVariablesTerminalesActionPerformed(evt);
@@ -87,27 +122,34 @@ public class Vista extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
         jLabel1.setText("Gramatica Chomsky");
 
+        jLabel2.setFont(new java.awt.Font("Monospaced", 0, 15)); // NOI18N
         jLabel2.setText("Variables no Terminales");
 
+        jLabel3.setFont(new java.awt.Font("Monospaced", 0, 15)); // NOI18N
         jLabel3.setText("Variables Terminales");
 
+        TextVariablesTerminales.setFont(new java.awt.Font("Monospaced", 0, 15)); // NOI18N
         TextVariablesTerminales.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 TextVariablesTerminalesActionPerformed(evt);
             }
         });
 
+        TextVariableInicial.setFont(new java.awt.Font("Monospaced", 0, 15)); // NOI18N
         TextVariableInicial.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 TextVariableInicialActionPerformed(evt);
             }
         });
 
+        jLabel4.setFont(new java.awt.Font("Monospaced", 0, 15)); // NOI18N
         jLabel4.setText("Variable Inicial");
 
+        jLabel5.setFont(new java.awt.Font("Monospaced", 0, 15)); // NOI18N
         jLabel5.setText("Sigma");
 
         TextSigma.setColumns(20);
+        TextSigma.setFont(new java.awt.Font("Monospaced", 0, 15)); // NOI18N
         TextSigma.setRows(5);
         jScrollPane1.setViewportView(TextSigma);
 
@@ -122,22 +164,21 @@ public class Vista extends javax.swing.JFrame {
                     .addComponent(jLabel5)
                     .addComponent(jLabel3)
                     .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(InputVariablesTerminales, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(TextVariablesTerminales)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
-                        .addComponent(TextVariableInicial)))
+                .addGap(23, 23, 23)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                    .addComponent(TextVariableInicial)
+                    .addComponent(TextVariablesTerminales)
+                    .addComponent(InputVariablesTerminales))
                 .addGap(22, 22, 22))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(100, 100, 100)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(137, 137, 137)
-                        .addComponent(jButton1)))
+                        .addComponent(jButton1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(119, 119, 119)
+                        .addComponent(jLabel1)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -247,7 +288,18 @@ public class Vista extends javax.swing.JFrame {
         
         chomsky.TextArea.setText(chomsky.TextArea.getText() + " \n \n " + " ---> REEMPLAZANDO UNITARIAS .... \n ");
         identificarProduccionesUnitarias();
-        
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + " \n \n " + "-->NORMALIZAR LA GRAMATICA A FNC \n");
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n" +" Normalizando Variables Terminales");
+        int ContadorVT=0;
+        variablesTerminales.remove("ε");
+        variablesTerminales.remove("λ");
+        for(String vt: variablesTerminales){
+            variableTerminal.put(vt, "T"+subscript(ContadorVT));
+            chomsky.TextArea.setText(chomsky.TextArea.getText() + " \n " + vt + "→T"+subscript(ContadorVT));
+            ContadorVT++;
+        }
+            System.out.println("Map Terminales:\n" + variableTerminal);
+        normalizar();      
         chomsky.setVisible(true);
         
         }
@@ -701,7 +753,27 @@ public class Vista extends javax.swing.JFrame {
     return prueba;
     }
     
+    
+    
     public List<String> ImprimirEnOrden(List<String> sigma){
+        List<String> eliminar = new ArrayList<>();
+        List<String> mostrar = new ArrayList<>();
+
+        for(String a: transcionesSigma){
+            boolean val= sigma.stream().anyMatch(t->t.equals(a));
+            if(!val){
+            eliminar.add(a);
+            }else{
+                mostrar.add(a);
+            }
+        }
+        mostrar.stream().forEach(s->System.out.println("Imprimir VariablesNoTerminales: " +s ));
+    return mostrar;
+    }
+    
+    
+    
+    public List<String> ImprimirEnOrdenVT(List<String> sigma){
         List<String> eliminar = new ArrayList<>();
         List<String> mostrar = new ArrayList<>();
 
@@ -748,6 +820,55 @@ public class Vista extends javax.swing.JFrame {
             if(!s.equals(varInicial)){
             contenidoLista=contenidoLista+ " " +s + "→";
             transi = transiciones.get(s);
+            for(String b: transi){
+            con++;
+            if(con==transi.size()){
+                contenidoLista= contenidoLista + b+"\n";
+            }else{
+                contenidoLista= contenidoLista + b + "/" ;
+            }
+            }
+            con=0;
+            contenidoLista= contenidoLista;
+        }
+        //System.out.println("Contador " + con);
+                //System.out.println("Lo que hay en contenido Lista: "+contenidoLista);
+        
+        }
+        chomsky.TextArea.setText(chomsky.TextArea.getText()  + contenidoLista);
+    }
+    
+    public void imprimirMapFinal(List<String> sigma){
+        List<String> prueba=transiciones.get("S");
+        //sigma.stream().forEach(s->System.out.println("Probando transiciones : "+s));
+        
+        List<String> transi= new ArrayList<>();
+        List<String> transiInicial= new ArrayList<>();
+        transiInicial= transicionesfinal.get(varInicial);
+
+        int con=0;
+        int conInicial=0;
+        //System.out.println("Tamañno sigma " + sigma.size() );
+        contenidoLista="";
+        contenidoListaInicial="";
+        contenidoListaInicial=contenidoListaInicial + " " + varInicial + "→";
+        for (String inicial: transiInicial){
+        conInicial++;
+        //contenidoListaInicial=contenidoListaInicial + inicial +"/";  
+            if(conInicial==transiInicial.size()){
+                contenidoLista= contenidoLista + inicial+"\n";
+            }else{
+                contenidoLista= contenidoLista + inicial + "/" ;
+            }
+            
+        }
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"+ "\n" + contenidoListaInicial);
+        
+        for(String s: sigma ){
+            
+            if(!s.equals(varInicial)){
+            contenidoLista=contenidoLista+ " " +s + "→";
+            transi = transicionesfinal.get(s);
             for(String b: transi){
             con++;
             if(con==transi.size()){
@@ -1059,6 +1180,266 @@ public class Vista extends javax.swing.JFrame {
             reemplazarUnitaria(unitarias, keys);
         }
     
+    }
+    
+    public void normalizar(){
+    List<String> keys= obtenerKeyMap(transiciones);
+        System.out.println("Map: \n" + transiciones);
+    List<String> varInicialProducciones= transiciones.get(varInicial);
+    List<String> nuevasProducciones=new ArrayList<>();
+    int sumar=1;
+
+    boolean gr=false;
+    for(String produccion: varInicialProducciones){
+        String[] variables= produccion.split("");
+        System.out.println("tamaño produccion: " + produccion + " valor: " +variables.length );
+        
+        if( variables.length<=2  ){
+            String var="";
+            for(String variable: variables){
+             boolean esVt=variablesTerminales.stream().anyMatch(g-> g.equals(variable));
+             if(esVt){
+                 String a=variableTerminal.get(variable);
+                 var=var+a;
+             }else{
+                var=var+variable;
+             }
+            }
+            System.out.println("Var: "+ var);
+            nuevasProducciones.add(var);
+        }else{
+          String var="";
+          int d=0;
+          int c=0;
+          boolean f=false;
+          String[] enviar= new String[variables.length-1];
+            for(String variable: variables){
+             if(c==0){
+                boolean esVt=variablesTerminales.stream().anyMatch(g-> g.equals(variable));
+                 System.out.println("Suma al inicio "+sumar);
+                if(esVt){
+                    String a=variableTerminal.get(variable);
+                    var=a+"V"+subscript(sumar);
+                }else{
+                   var=variable+"V"+subscript(sumar);
+                }
+                
+                gr=true;
+                
+             }else{
+                 enviar[d]=variable;
+                 d++;
+                 f=true;
+             }
+             c++;
+            }
+            if(f==true){
+                sumar=sumas(enviar,sumar);
+            }
+            /*if(gr==false){
+                    sumar++;
+                }else{
+                
+                }*/
+            System.out.println("Var: "+ var + " suma es "+ sumar);
+            nuevasProducciones.add(var);
+          
+        }
+        transicionesfinal.put(varInicial, nuevasProducciones);
+  
+    }
+    
+        System.out.println("Map de inicial: \n" +transicionesfinal);
+    
+    //validar desde aqui para las keys
+    //nuevasProducciones.clear();
+    
+   
+    keys.stream().forEach(hh->System.out.println("Keys to:"+ hh));
+    //List<String> nuevasProducciones2=new ArrayList<>();
+    int su=0;
+    keys.remove(varInicial);
+    List<String> keysb= Arrays.asList("A","B");
+    for(String key: keys){
+        su++;
+        String suS=String.valueOf(su);
+        List<String> nuevasProducciones2=new ArrayList<>();
+        nuevasProducciones2.stream().forEach(nm->System.out.println("Producciones 2 "+ nm));
+        nuevasProducciones2.removeAll(nuevasProducciones2);
+        nuevasProducciones2.stream().forEach(nm->System.out.println("Producciones 2 despues de remover "+ nm));
+
+        if(!key.equals(varInicial)){
+            System.out.println("Entro key if: " +key);
+            varInicialProducciones=transiciones.get(key);
+            gr=false;
+            for(String produccion: varInicialProducciones){
+                String[] variables= produccion.split("");
+                System.out.println("tamaño produccion: " + produccion + " valor: " +variables.length );
+
+                if( variables.length<=2  ){
+                    String var="";
+                    for(String variable: variables){
+                     boolean esVt=variablesTerminales.stream().anyMatch(g-> g.equals(variable));
+                     if(esVt){
+                         String a=variableTerminal.get(variable);
+                         var=var+a;
+                     }else{
+                        var=var+variable;
+                     }
+                      System.out.println("Llega a guardar if produccion: " +var);
+                    }
+                    System.out.println("Var: "+ var);
+                    nuevasProducciones2.add(var);
+                }else{
+                  String var="";
+                  int d=0;
+                  int c=0;
+                  boolean f=false;
+                  String[] enviar= new String[variables.length-1];
+                    for(String variable: variables){
+                     if(c==0){
+                        boolean esVt=variablesTerminales.stream().anyMatch(g-> g.equals(variable));
+                         System.out.println("Suma al inicio "+sumar);
+                        if(esVt){
+                            String ar=variableTerminal.get(variable);
+                            var=ar+"V"+subscript(sumar);
+                        }else{
+                           var=variable+"V"+subscript(sumar);
+                        }
+                         System.out.println("Llega a guardar else produccion: " +var);
+
+                        gr=true;
+
+                     }else{
+                         enviar[d]=variable;
+                         d++;
+                         f=true;
+                     }
+                     c++;
+                    }
+                    if(f==true){
+                        sumar=sumas(enviar,sumar);
+                    }
+                   
+                    
+                    System.out.println("Var: "+ var + " suma es "+ sumar);
+                    nuevasProducciones2.add(var);
+                }
+                
+                
+
+            }
+            for(String gre: nuevasProducciones2){
+                    System.out.println("Guardar en el map Key: "+key + " produccion " +gre);
+                }
+            
+            //nuevasProducciones2.clear();
+        }
+        
+        transicionesfinal.put(key, nuevasProducciones2);
+        //nuevasProducciones.clear();
+    }
+    
+            System.out.println("Map final transacciones \n" + transicionesfinal);
+         //Sirve con cualquier map  
+        List<String> TransicionesGeneranSigma4=obtenerKeyMap(transicionesfinal);
+        TransicionesGeneranSigma4.stream().forEach(hh->System.out.println("Keys del map final " + hh));
+        //List<String> imprimirOrdenSigma=ImprimirEnOrden(TransicionesGeneranSigma4);
+        imprimirMapFinal(TransicionesGeneranSigma4);
+
+    }
+    
+    public int sumas(String[] variables,int suma){
+        List<String> probar = Arrays.stream(variables).collect(Collectors.toList());
+        List<String> nuevasProducciones=new ArrayList<>();
+        String re= "";
+        for(String l: variables){
+            re=re+l;
+        }
+        if(entro==false){
+        
+        }
+        System.out.println("LLega a suma: " + re);
+        System.out.println("Suma llega: " +suma);
+        System.out.println("Tamaño variables length: "+ variables.length);
+        int sumar= suma;
+        int a = variables.length;
+        String var="";
+        int d=0;
+        int cc=0;
+        boolean r=false;
+        boolean rx=false;
+        String[] enviar= new String[variables.length-1];
+        for(String v: variables){
+            System.out.println("Entra y suma a variable "+ suma);
+            if(a==2){
+                boolean esVt=variablesTerminales.stream().anyMatch(g-> g.equals(v)); 
+                if(rx==false){
+                    contadorNormalizaar++;
+                    suma++;
+                     System.out.println("Entra y suma "+ suma);
+                }
+                if(esVt){
+                 String c=variableTerminal.get(v);
+                 var=var+c;
+                 rx=true;
+                 
+                }else{
+                    var=var+v;
+                    rx=true;
+                    
+                }
+                
+            }
+            if(a>2){
+                
+                boolean f=false;
+                    if(cc==0){
+                        boolean esVt=variablesTerminales.stream().anyMatch(g-> g.equals(v));
+                        System.out.println("haber q sale V"+subscript(sumar-1)+" de la variable: " +v);
+                        if(rx==false){
+                            contadorNormalizaar++;
+                            suma++;
+                             System.out.println("Entra y suma "+ suma);
+                             
+                        }
+                        if(esVt){
+                            String ac=variableTerminal.get(v);
+                            var=ac+"V"+subscript(suma);
+                            rx=true;
+                            entro=true;
+                        }else{
+                           var=v+"V"+subscript(suma);
+                           rx=true;
+                           entro=true;
+                        }
+                        System.out.println("Dentro del if Var: " +var);
+                    cc++;
+                    
+                    }else{
+                        enviar[d]=v;
+                        d++;
+                        r=true;
+                    }
+                   
+            }
+        }
+        System.out.println("Var: "+var + " en probar para añadir: " + "V"+subscript(contadorNormalizaar));
+        nuevasProducciones.add(var);
+        transicionesfinal.put("V"+subscript(contadorNormalizaar), nuevasProducciones);
+        //suma=suma-1;
+        System.out.println("Suma se envia: " +suma);
+        
+        if(r==true){
+            for(String e:enviar){
+                System.out.println("Enviar tiene: "+e);
+            }
+            
+            sumas(enviar, suma);
+        }
+        //nuevasProducciones.clear();
+        
+       return contadorNormalizaar+1;
     }
     
     public String imprimirListString(String key){
