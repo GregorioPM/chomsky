@@ -42,6 +42,7 @@ public class Vista extends javax.swing.JFrame {
     int contadorParaNoGeneradora=0;
     List<String> produccionesNuevas = new ArrayList<>();
     Map<String,List<String>> mapNuevosSimbolos= new HashMap<>();
+    Map<String,List<String>> variablesFinales= new HashMap<>();
     boolean entro=false;
     int contadorNormalizaar=0;
     int contadorNormalizar2=0;
@@ -885,6 +886,48 @@ public class Vista extends javax.swing.JFrame {
         
         }
         chomsky.TextArea.setText(chomsky.TextArea.getText()  + contenidoLista);
+        
+        int conVariables = variablesFinales.size();
+        
+        String contenidoVariables="";
+        List<String> varFinales= new ArrayList<>();
+        for(int ia=1; ia<=conVariables;ia++){
+            String key="V"+subscript(ia);
+            varFinales=variablesFinales.get(key);
+            contenidoVariables=contenidoVariables+ " " +key + "→";
+            for(String b: varFinales){
+            con++;
+            if(con==transi.size()){
+                contenidoVariables= contenidoVariables + b+"\n";
+            }else{
+                contenidoVariables= contenidoVariables + b + "\n" ;
+            }
+            }
+            con=0;
+            contenidoVariables= contenidoVariables;
+        }
+        
+        chomsky.TextArea.setText(chomsky.TextArea.getText()  + contenidoVariables);
+        
+        
+        
+        int conVariablesT = variableTerminal.size();
+        
+        String contenidoVariablesT="";
+        List<String> varFinalesT= new ArrayList<>();
+       String varT="";
+        for(String g: variablesTerminales){
+            varT=variableTerminal.get(g);
+            contenidoVariablesT=contenidoVariablesT+ " " +g + "→";
+
+            contenidoVariablesT= contenidoVariablesT + varT+"\n";
+            
+            contenidoVariablesT= contenidoVariablesT;
+        
+        }
+        
+        chomsky.TextArea.setText(chomsky.TextArea.getText()  + contenidoVariablesT);
+        
     }
     
     
@@ -1345,6 +1388,7 @@ public class Vista extends javax.swing.JFrame {
         List<String> TransicionesGeneranSigma4=obtenerKeyMap(transicionesfinal);
         TransicionesGeneranSigma4.stream().forEach(hh->System.out.println("Keys del map final " + hh));
         //List<String> imprimirOrdenSigma=ImprimirEnOrden(TransicionesGeneranSigma4);
+        chomsky.TextArea.setText(chomsky.TextArea.getText()  + "\n \n" + " --- FORMA NORMAL DE CHOMSKY REEMPLAZANDO");
         imprimirMapFinal(TransicionesGeneranSigma4);
 
     }
@@ -1426,7 +1470,7 @@ public class Vista extends javax.swing.JFrame {
         }
         System.out.println("Var: "+var + " en probar para añadir: " + "V"+subscript(contadorNormalizaar));
         nuevasProducciones.add(var);
-        transicionesfinal.put("V"+subscript(contadorNormalizaar), nuevasProducciones);
+        variablesFinales.put("V"+subscript(contadorNormalizaar), nuevasProducciones);
         //suma=suma-1;
         System.out.println("Suma se envia: " +suma);
         
