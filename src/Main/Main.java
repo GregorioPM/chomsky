@@ -15,7 +15,7 @@ public class Main {
         
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Vista().setVisible(true);
+                new Inicio().setVisible(true);
             }
         });
     }

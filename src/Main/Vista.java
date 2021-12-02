@@ -46,6 +46,8 @@ public class Vista extends javax.swing.JFrame {
     boolean entro=false;
     int contadorNormalizaar=0;
     int contadorNormalizar2=0;
+    boolean probarVt = false;
+    boolean probarVnt= false;
 
      
      public static String subscript(int subIndice) {
@@ -103,6 +105,7 @@ public class Vista extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         TextSigma = new javax.swing.JTextArea();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -113,6 +116,7 @@ public class Vista extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
         jButton1.setText("Convertir");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -120,7 +124,7 @@ public class Vista extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Monospaced", 1, 24)); // NOI18N
         jLabel1.setText("Gramatica Chomsky");
 
         jLabel2.setFont(new java.awt.Font("Monospaced", 0, 15)); // NOI18N
@@ -154,40 +158,52 @@ public class Vista extends javax.swing.JFrame {
         TextSigma.setRows(5);
         jScrollPane1.setViewportView(TextSigma);
 
+        jButton3.setText("< Regresar");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2))
-                .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
-                    .addComponent(TextVariableInicial)
-                    .addComponent(TextVariablesTerminales)
-                    .addComponent(InputVariablesTerminales))
-                .addGap(22, 22, 22))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(jButton3)
+                        .addGap(104, 104, 104)
+                        .addComponent(jLabel1)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel2))
+                        .addGap(23, 23, 23)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
+                            .addComponent(TextVariableInicial)
+                            .addComponent(TextVariablesTerminales)
+                            .addComponent(InputVariablesTerminales))
+                        .addGap(22, 22, 22))))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(137, 137, 137)
-                        .addComponent(jButton1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(119, 119, 119)
-                        .addComponent(jLabel1)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(241, 241, 241)
+                .addComponent(jButton1)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(6, 6, 6)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jButton3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(InputVariablesTerminales, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
@@ -202,14 +218,14 @@ public class Vista extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 231, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addGap(31, 31, 31)
                         .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addComponent(jButton1)
-                .addGap(6, 6, 6))
+                        .addContainerGap(257, Short.MAX_VALUE))))
         );
 
         pack();
@@ -221,6 +237,13 @@ public class Vista extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         //this.setVisible(false);
+        //transiciones=null;
+        //transicionesfinal=null;
+        //variableTerminal=null;
+        //mapNuevosSimbolos= null;
+        //variablesFinales= null;
+        transicionesfinal.keySet().removeIf(key-> !key.equals("GREGORIO"));
+        contadorNormalizaar=0;
         borrarNoGeneradoras.removeAll(borrarNoGeneradoras);
         if(!borrarNoGeneradoras.isEmpty()){
         borrarNoGeneradoras.stream().forEach(ss->System.out.println("Imprime no generadora "+ ss));
@@ -234,6 +257,7 @@ public class Vista extends javax.swing.JFrame {
                 transiciones.remove(b);
             }
         }
+        
         
         chomsky.TextArea.setText("");
         chomsky.setVisible(false);
@@ -301,7 +325,10 @@ public class Vista extends javax.swing.JFrame {
         }
             System.out.println("Map Terminales:\n" + variableTerminal);
         normalizar();      
-        chomsky.setVisible(true);
+        if(!probarVnt && !probarVt){
+            chomsky.setVisible(true);
+        }
+        
         
         }
         
@@ -319,14 +346,23 @@ public class Vista extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_TextVariableInicialActionPerformed
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        Inicio inicio = new Inicio();
+        inicio.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jButton3ActionPerformed
+
     public void esString(String datos,String mensaje){
         if(!datos.matches("[a-zA-Z]")){
             JOptionPane.showMessageDialog(rootPane, mensaje + datos  + " no esta permitida");
+            probarVnt = true;
         }
     }
     public void noEsNumero(String datos,String mensaje){
         if(!datos.matches("[0-9]") && !datos.matches("[λε]") && !datos.matches("[a-z]")){
             JOptionPane.showMessageDialog(rootPane, mensaje + datos  + " no esta permitido");
+            probarVt=true;
         }
     }
     
@@ -1558,6 +1594,7 @@ public class Vista extends javax.swing.JFrame {
     private javax.swing.JTextField TextVariableInicial;
     private javax.swing.JTextField TextVariablesTerminales;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
