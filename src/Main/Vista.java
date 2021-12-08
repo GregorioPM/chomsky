@@ -1266,7 +1266,9 @@ public class Vista extends javax.swing.JFrame {
     List<String> nuevasProducciones=new ArrayList<>();
     int sumar=1;
 
+    chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n \n" + " Normalizando variables de la transicion "+ varInicial + "\n"  );
     boolean gr=false;
+        imprimirTransiciones(varInicial, transiciones);
     for(String produccion: varInicialProducciones){
         String[] variables= produccion.split("");
         System.out.println("tamaño produccion: " + produccion + " valor: " +variables.length );
@@ -1282,6 +1284,7 @@ public class Vista extends javax.swing.JFrame {
                 var=var+variable;
              }
             }
+            chomsky.TextArea.setText(chomsky.TextArea.getText() + " " + produccion + "→" + var + "\n");
             System.out.println("Var: "+ var);
             nuevasProducciones.add(var);
         }else{
@@ -1310,6 +1313,7 @@ public class Vista extends javax.swing.JFrame {
              }
              c++;
             }
+            chomsky.TextArea.setText(chomsky.TextArea.getText() + " " + produccion + "→" + var + "\n");
             if(f==true){
                 sumar=sumas(enviar,sumar);
             }
@@ -1325,6 +1329,9 @@ public class Vista extends javax.swing.JFrame {
         transicionesfinal.put(varInicial, nuevasProducciones);
   
     }
+    imprimirTransiciones(varInicial, transicionesfinal);
+    chomsky.TextArea.setText(chomsky.TextArea.getText() +  "\n");
+
     
         System.out.println("Map de inicial: \n" +transicionesfinal);
     
@@ -1338,6 +1345,8 @@ public class Vista extends javax.swing.JFrame {
     keys.remove(varInicial);
     List<String> keysb= Arrays.asList("A","B");
     for(String key: keys){
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n" + " Normalizando variables de la transicion "+ key + "\n"  );
+        imprimirTransiciones(key, transiciones);
         su++;
         String suS=String.valueOf(su);
         List<String> nuevasProducciones2=new ArrayList<>();
@@ -1365,6 +1374,7 @@ public class Vista extends javax.swing.JFrame {
                      }
                       System.out.println("Llega a guardar if produccion: " +var);
                     }
+                    chomsky.TextArea.setText(chomsky.TextArea.getText() + " " + produccion + "→" + var + "\n");
                     System.out.println("Var: "+ var);
                     nuevasProducciones2.add(var);
                 }else{
@@ -1394,6 +1404,7 @@ public class Vista extends javax.swing.JFrame {
                      }
                      c++;
                     }
+                    chomsky.TextArea.setText(chomsky.TextArea.getText() + " " + produccion + "→" + var + "\n");
                     if(f==true){
                         sumar=sumas(enviar,sumar);
                     }
@@ -1414,6 +1425,7 @@ public class Vista extends javax.swing.JFrame {
         }
         
         transicionesfinal.put(key, nuevasProducciones2);
+        imprimirTransiciones(key, transicionesfinal);
         //nuevasProducciones.clear();
     }
     
@@ -1504,6 +1516,7 @@ public class Vista extends javax.swing.JFrame {
         }
         System.out.println("Var: "+var + " en probar para añadir: " + "V"+subscript(contadorNormalizaar));
         nuevasProducciones.add(var);
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + " " + "V"+subscript(contadorNormalizaar) + "→" + var + "\n");
         variablesFinales.put("V"+subscript(contadorNormalizaar), nuevasProducciones);
         //suma=suma-1;
         System.out.println("Suma se envia: " +suma);
@@ -1518,6 +1531,23 @@ public class Vista extends javax.swing.JFrame {
         //nuevasProducciones.clear();
         
        return contadorNormalizaar+1;
+    }
+    
+    public void imprimirTransiciones(String key, Map<String,List<String>> transicion){
+        String a=key +"→";
+        int cont = 0;
+        List<String> transicions=new ArrayList<>();
+        transicions=transicion.get(key);
+        for(String p: transicions){
+            cont++;
+        //contenidoListaInicial=contenidoListaInicial + inicial +"/";  
+            if(cont==transicions.size()){
+                a= a + p;
+            }else{
+                a= a + p + "/" ;
+            } 
+        }
+       chomsky.TextArea.setText(chomsky.TextArea.getText() + " " +a + "\n");
     }
     
     public String imprimirListString(String key){
