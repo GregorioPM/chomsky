@@ -63,7 +63,7 @@ public class Vista extends javax.swing.JFrame {
          return b;
         
 }
-     
+     //Para concatenar subIndice a la variable
      public static String subindice(String str){
      str = str.replaceAll("0", "₀");
         str = str.replaceAll("1", "₁");
@@ -236,12 +236,8 @@ public class Vista extends javax.swing.JFrame {
     }//GEN-LAST:event_InputVariablesTerminalesActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        //this.setVisible(false);
-        //transiciones=null;
-        //transicionesfinal=null;
-        //variableTerminal=null;
-        //mapNuevosSimbolos= null;
-        //variablesFinales= null;
+        
+        //Primero tomo todas las estructuras y las vacio por si se utiliza por segunda vez el normalizar
         transicionesfinal.keySet().removeIf(key-> !key.equals("GREGORIO"));
         contadorNormalizaar=0;
         borrarNoGeneradoras.removeAll(borrarNoGeneradoras);
@@ -251,6 +247,7 @@ public class Vista extends javax.swing.JFrame {
         transcionesSigma.removeAll(transcionesSigma);
         variablesTerminales.removeAll(variablesTerminales);
         variablesNoTerminales.removeAll(variablesNoTerminales);
+        variablesFinales.clear();
         
         if(!variablesNoTerminales.isEmpty()){
             for(String b: variablesTerminales){
@@ -261,6 +258,8 @@ public class Vista extends javax.swing.JFrame {
         
         chomsky.TextArea.setText("");
         chomsky.setVisible(false);
+        
+        //Aqui asigno a las estrucutura de datos las variables no terminales y terminales, sigma
         String varNoTer= InputVariablesTerminales.getText();
         variablesNoTerminales= new ArrayList<String>(Arrays.asList(varNoTer.split(",")));
         variablesNoTerminales.stream()
@@ -279,41 +278,38 @@ public class Vista extends javax.swing.JFrame {
         boolean estaVarInicial = variablesNoTerminales.stream()
                                 .anyMatch(vnt-> vnt.equals(varInicial));
         
+        //Se valida que la variable inicial se enceuntre en las variablesnoTerminales
         if(estaVarInicial==false){
             JOptionPane.showMessageDialog(rootPane, "La variable inicial " +varInicial +" no se encuentra en las variables no terminales");
         }else{
         System.out.println(estaVarInicial);
         
-        //
         
         chomsky.setString(TextSigma.getText());
         
         transiciones=null;
         
-        //Asignar sigma a un map
-                String a;
-        /*Map<String, List<String>> transiciones =
-                Arrays.stream(TextSigma.getText().split(","))
-                //.map(i-> i.split("/"))
-                //.forEach(System.out::println)
-                .map(i-> i.split("→"))
-                .collect(Collectors.groupingBy(entry->entry[0],v->convertirSigma(v[1])));
-                /*.collect(Collectors.groupingBy(entry-> entry[0],
-                        Collectors.mapping(entry->convertirSigma(entry[1]),
-                                Collectors.toList() )));*/
         
-
-        //transiciones.entrySet().stream().forEach(e->System.out.println(e.getKey() + " : " + e.getValue()));
+        String a;
         
-        chomsky.TextArea.setText(" Sigma sus Transiciones ...."  );
+        
+        //Se imprime en textarea sigma sus transiciones
+        chomsky.TextArea.setText(" --> SIGMA SUS TRANSICIONES ...."  );
+        
+        //Se asigna al map las transiciones
+        //Elimina produccion no generadoras de la transicion
+        //Obtiene los key que todavia existen en el map y validan si tiene una variable inutil
+        //Recibe como parametros los key del map , lo recorre y validad si es no alcanzable y se borra la transicion
         guardarTransiciones(TextSigma.getText());
         
-        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"+ "\n" +" Se elimina producciones nulas"+ "\n");
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"+ "\n" +" --> SE ELIMINA PRODUCCIONES NULAS"+ "\n");
+        //En este metodo detecta las nulas no recibe nada por en el mismo metodo obtiene los key del map y los recorre y validad
         detectarNulas();
         
-        chomsky.TextArea.setText(chomsky.TextArea.getText() + " \n \n " + " ---> REEMPLAZANDO UNITARIAS .... \n ");
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + " \n \n " + " --> REEMPLAZANDO UNITARIAS .... \n ");
+        //En este metodo identifica las nulas de las trancisiones y las reemplaza
         identificarProduccionesUnitarias();
-        chomsky.TextArea.setText(chomsky.TextArea.getText() + " \n \n " + "-->NORMALIZAR LA GRAMATICA A FNC \n");
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + " \n \n " + "--> NORMALIZAR LA GRAMATICA A FNC \n");
         chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n" +" Normalizando Variables Terminales");
         int ContadorVT=0;
         variablesTerminales.remove("ε");
@@ -406,7 +402,7 @@ public class Vista extends javax.swing.JFrame {
                         if(esRecursiva(bTran)){
                             contadorParaNoGeneradora++;
                           if(contadorParaNoGeneradora==1){
-                              chomsky.TextArea.setText(chomsky.TextArea.getText() +"\n" + "\n"  +" Eliminando no generadoras" +"\n");
+                              chomsky.TextArea.setText(chomsky.TextArea.getText() +"\n" + "\n"  +" --> ELIMINANDO NO GENERADORAS" +"\n");
                           }
                           
                           chomsky.TextArea.setText(chomsky.TextArea.getText()+ "\n"+" La transicion " +  bTran +" no es generadora");
@@ -428,10 +424,12 @@ public class Vista extends javax.swing.JFrame {
         imprimirOrden.stream().forEach(m->System.out.println("Orden de generadoras: " +m));
         imprimirMap(imprimirOrden);
         }
-        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"+ "\n" +" Se elimina Variables inutiles"+ "\n");
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n"+ "\n" +" --> SE ELIMINA VARIABLES INUTILES ..."+ "\n");
+        
+        //Obtiene los key que todavia existen en el map y validan si tiene una variable inutil
         esVariableInutil(imprimirOrden);
         
-        
+        //Recibe como parametros los key del map , lo recorre y validad si es no alcanzable y se borra la transicion
         noAlcanzable(imprimirOrden);
         
         
@@ -488,7 +486,7 @@ public class Vista extends javax.swing.JFrame {
         List<String> noSonAlcanzablesValidado= esAlcanzable(sonAlcanzables, noSonAlcanzables);
         //System.out.println("Transacciones en no alcanzable \n" +transiciones);
         if(!noSonAlcanzablesValidado.isEmpty()){
-        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n \n" + " Eliminando transiciones no alcanzables... \n");
+        chomsky.TextArea.setText(chomsky.TextArea.getText() + "\n \n" + " -->ELIMINANDO TRANSICIONES NO ALCANZABLES... \n");
         }
         for(String son: noSonAlcanzablesValidado){
             System.out.println("Se elimino transicion no alcanzable: "+ son);
@@ -1424,7 +1422,7 @@ public class Vista extends javax.swing.JFrame {
         List<String> TransicionesGeneranSigma4=obtenerKeyMap(transicionesfinal);
         TransicionesGeneranSigma4.stream().forEach(hh->System.out.println("Keys del map final " + hh));
         //List<String> imprimirOrdenSigma=ImprimirEnOrden(TransicionesGeneranSigma4);
-        chomsky.TextArea.setText(chomsky.TextArea.getText()  + "\n \n" + " --- FORMA NORMAL DE CHOMSKY REEMPLAZANDO");
+        chomsky.TextArea.setText(chomsky.TextArea.getText()  + "\n \n" + " --> FORMA NORMAL DE CHOMSKY REEMPLAZANDO ....");
         imprimirMapFinal(TransicionesGeneranSigma4);
 
     }
